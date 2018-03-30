@@ -1,16 +1,3 @@
-'''
-Created on Sep 16, 2010
-kNN: k Nearest Neighbors
-
-Input:      inX: vector to compare to existing dataset (1xN)
-            dataSet: size m data set of known vectors (NxM)
-            labels: data set labels (1xM vector)
-            k: number of neighbors to use for comparison (should be an odd number)
-            
-Output:     the most popular class label
-
-@author: pbharrin
-'''
 from numpy import *
 import operator
 from os import listdir
@@ -40,15 +27,15 @@ def classify0(inX, dataSet, labels, k):
 
 
 '''
-case 2 
+case 2 Dating match
 '''
 def file2matrix(filename):
     fr = open(filename)
     numberOfLines = len(fr.readlines())         #get the number of lines in the file
     returnMat = zeros((numberOfLines,3))        #prepare matrix to return
     classLabelVector = []                    #prepare labels return   
-    fr = open(filename)
     index = 0
+    fr = open(filename)
     for line in fr.readlines():
         line = line.strip()
         listFromLine = line.split('\t')
@@ -68,7 +55,7 @@ def autoNorm(dataSet):
     return normDataSet, ranges, minVals
    
 def datingClassTest():
-    hoRatio = 0.50      #hold out 10%
+    hoRatio = 0.20      #hold out 20%
     datingDataMat,datingLabels = file2matrix('datingTestSet2.txt')       #load data setfrom file
     normMat, ranges, minVals = autoNorm(datingDataMat)
     m = normMat.shape[0]
@@ -80,7 +67,12 @@ def datingClassTest():
         if (classifierResult != datingLabels[i]): errorCount += 1.0
     print("the total error rate is: %f" % (errorCount/float(numTestVecs)))
     print(errorCount)
-    
+
+
+
+'''
+case 3: MNIST recognition
+'''    
 def img2vector(filename):
     returnVect = zeros((1,1024))
     fr = open(filename)
@@ -92,7 +84,7 @@ def img2vector(filename):
 
 def handwritingClassTest():
     hwLabels = []
-    trainingFileList = listdir('trainingDigits')           #load the training set
+    trainingFileList = listdir('digits/trainingDigits')           #load the training set
     m = len(trainingFileList)
     trainingMat = zeros((m,1024))
     for i in range(m):
@@ -100,15 +92,15 @@ def handwritingClassTest():
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
         hwLabels.append(classNumStr)
-        trainingMat[i,:] = img2vector('trainingDigits/%s' % fileNameStr)
-    testFileList = listdir('testDigits')        #iterate through the test set
+        trainingMat[i,:] = img2vector('digits/trainingDigits/%s' % fileNameStr)
+    testFileList = listdir('digits/testDigits')        #iterate through the test set
     errorCount = 0.0
     mTest = len(testFileList)
     for i in range(mTest):
         fileNameStr = testFileList[i]
         fileStr = fileNameStr.split('.')[0]     #take off .txt
         classNumStr = int(fileStr.split('_')[0])
-        vectorUnderTest = img2vector('testDigits/%s' % fileNameStr)
+        vectorUnderTest = img2vector('digits/testDigits/%s' % fileNameStr)
         classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
         print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr))
         if (classifierResult != classNumStr): errorCount += 1.0
@@ -117,7 +109,11 @@ def handwritingClassTest():
 
 
 if __name__ == '__main__':
-    group, labels = createDataSet()
-    inX = [0.2, 0.]
-    print('{} is {}'.format(inX, classify0(inX, group, labels, k=3)))
+    # group, labels = createDataSet()
+    # inX = [0.2, 0.]
+    # print('{} is {}'.format(inX, classify0(inX, group, labels, k=3)))
+    
+    # datingClassTest()
+    handwritingClassTest()
+
 
